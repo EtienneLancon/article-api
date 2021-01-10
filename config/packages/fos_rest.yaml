@@ -1,0 +1,57 @@
+# Read the documentation: https://symfony.com/doc/master/bundles/FOSRestBundle/index.html
+fos_rest:
+    view:
+      formats: {json: true, xml: true, rss: false}
+      serialize_null: true
+      view_response_listener: true
+      mime_types:
+        json: ['application/json', 'application/json;version=1.0'
+              , 'application/json;version=2.0', 'application/json;version=3.0']
+        xml: ['application/xml', 'application/xml;version=1.0'
+              , 'application/xml;version=2.0', 'application/xml;version=3.0']
+
+    body_converter:
+      enabled: true
+      validate: true
+      validation_errors_argument: violations
+
+    format_listener:
+      rules:
+        - {path: '^/', priorities: ['json', 'xml'], fallback_format: 'json'}
+
+    param_fetcher_listener: force
+
+    serializer:
+      serialize_null: true
+
+    exception:
+      enabled: true
+      serializer_error_renderer: true
+      map_exception_codes: true
+      codes:
+        { App\Exception\ResourceValidationException: 400,
+          App\Exception\NotFoundException: 404 }
+      messages:
+        { App\Exception\ResourceValidationException: true,
+          App\Exception\NotFoundException: true }
+
+    versioning:
+      enabled: true
+      resolvers:
+          media_type: # Accept header
+              enabled: true
+              regex: '/(v|version)=(?P<version>[0-9\.]+)/'
+
+#    param_fetcher_listener:  true
+#    allowed_methods_listener:  true
+#    routing_loader: true
+#    view:
+#        view_response_listener:  true
+#    exception:
+#        codes:
+#            App\Exception\MyException: 403
+#        messages:
+#            App\Exception\MyException: Forbidden area.
+#    format_listener:
+#        rules:
+#            - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json, html ] }
