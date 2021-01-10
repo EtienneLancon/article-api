@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    weather_api_key: b1b15e88fa797225412429c1c50c122a1
 
 services:
     # default configuration for services in *this* file
@@ -27,5 +28,25 @@ services:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
+    serializer_listener.group_modifyer:
+        class: App\Subscriber\PreSerializeSubscriber
+        tags:
+            - { name: jms_serializer.event_subscriber }
+
+    auth_kernel_listener.header_adder:
+        class: App\Subscriber\AuthKernelSubscriber
+        tags:
+            - { name: kernel.event_subscriber }
+
+    app.weather:
+        public: true
+        class: App\ApiCaller\Weather
+        arguments:
+            - '@csa_guzzle.client.weather'
+            - '@jms_serializer'
+            - '%weather_api_key%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+ 
