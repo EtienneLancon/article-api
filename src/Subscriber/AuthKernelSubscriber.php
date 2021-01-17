@@ -11,13 +11,13 @@ class AuthKernelSubscriber implements EventSubscriberInterface
 {
     public function onKernelResponse(ResponseEvent $event)
     {
-        $authorizedOrigins = array('http://localhost:4200', 'http://localhost:8000', 'postman');
-        $origin = $event->getRequest()->server->get('HTTP_ORIGIN');
+        $authorizedOrigins = array('127.0.0.1');
+        $origin = $event->getRequest()->server->get('REMOTE_ADDR');
 
         $response = $event->getResponse();
 
         if(in_array($origin, $authorizedOrigins)){
-            $response->headers->set('Access-Control-Allow-Origin', $origin);
+            $response->headers->set('Access-Control-Allow-Origin', $event->getRequest()->server->get('HTTP_ORIGIN'));
         }else{
             $response->setStatusCode(Response::HTTP_UNAUTHORIZED);
             $return['code'] = Response::HTTP_UNAUTHORIZED;
